@@ -597,3 +597,248 @@
   </script>
 </body>
 </html>
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+ /* Definindo uma cor de fundo para o corpo da página */
+body {
+    background-color: #f8f9fa; /* cor clara de fundo */
+    font-family: Arial, sans-serif; /* alterando a fonte */
+}
+
+/* Estilo para o cabeçalho */
+h1 {
+    color: #007bff; /* cor azul */
+    text-align: center; /* centralizando o texto */
+}
+
+/* Estilo para as tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #343a40;
+    color: white;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #ddd;
+}
+
+/* Estilo para o botão de "Finalizar" */
+button.finalizar-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button.finalizar-btn:hover {
+    background-color: #218838;
+}
+
+
+
+button.btn-edit { /* Botão Editar */
+    background-color: #6c757d; /* cinza escuro */
+    color: white;
+    border: none;
+}
+
+button.btn-edit:hover {
+    background-color: #5a6268; /* tom mais escuro de cinza */
+}
+
+button.btn-save { /* Botão Salvar */
+    background-color: #6c757d; /* cinza escuro */
+    color: white;
+    border: none;
+}
+
+button.btn-save:hover {
+    background-color: #5a6268; /* tom mais escuro de cinza */
+}
+
+button.btn-update { /* Botão Atualizar */
+    background-color: #6c757d; /* cinza escuro */
+    color: white;
+    border: none;
+}
+
+button.btn-update:hover {
+    background-color: #5a6268; /* tom mais escuro de cinza */
+}
+button.btn-add { /* Botão Adicionar */
+    background-color: #6c757d; /* cinza escuro */
+    color: white;
+    border: none;
+}
+
+button.btn-add:hover {
+    background-color: #5a6268; /* tom mais escuro de cinza */
+}
+
+
+/* Estilo para a div de botões dentro das células da tabela */
+.btn-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px; /* espaço entre os botões */
+}
+
+/* Melhorando a aparência dos tooltips */
+.tooltip-inner {
+    background-color: #343a40;
+    color: white;
+}
+
+/* Adicionando sombra aos botões para destacar ao passar o mouse */
+button:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// Função para mudar o status da tarefa para "Finalizado"
+function finalizarTarefa(id) {
+  const row = document.getElementById('task-' + id); // seleciona a linha da tarefa
+  const finalizarBtn = row.querySelector('.finalizar-btn'); // encontra o botão de finalizar
+
+  // Verifica se o botão já foi clicado
+  if (!finalizarBtn.classList.contains('completed')) {
+      // Marca a tarefa como finalizada
+      row.cells[4].innerText = 'Finalizado em ' + new Date().toLocaleDateString();
+      finalizarBtn.classList.add('completed');
+      finalizarBtn.innerText = 'Finalizada'; // Alterando o texto do botão
+      finalizarBtn.disabled = true; // Desabilitando o botão após ser clicado
+  }
+}
+
+// Espera o carregamento da página
+document.addEventListener("DOMContentLoaded", () => {
+
+// Evento para o botão "Escrever"
+const writeButtons = document.querySelectorAll('.btn-warning');
+writeButtons.forEach(button => {
+  button.addEventListener('click', function () {
+    const taskRow = this.closest('tr'); // Pega a linha da tarefa
+    const taskTitle = taskRow.querySelector('td').textContent.trim(); // Pega o título da tarefa
+    alert(`Você clicou para escrever sobre: ${taskTitle}`);
+  });
+});
+
+// Evento para o botão "Salvar"
+const saveButtons = document.querySelectorAll('.btn-success');
+saveButtons.forEach(button => {
+  button.addEventListener('click', function () {
+    const taskRow = this.closest('tr');
+    const taskTitle = taskRow.querySelector('td').textContent.trim();
+    alert(`A tarefa "${taskTitle}" foi salva com sucesso.`);
+  });
+});
+
+// Evento para o botão "Apagar"
+const deleteButtons = document.querySelectorAll('.btn-danger');
+deleteButtons.forEach(button => {
+  button.addEventListener('click', function () {
+    const taskRow = this.closest('tr');
+    const taskTitle = taskRow.querySelector('td').textContent.trim();
+    if (confirm(`Tem certeza que deseja apagar a tarefa "${taskTitle}"?`)) {
+      taskRow.remove(); // Remove a linha da tabela
+    }
+  });
+});
+
+// Evento para o botão "Adicionar Data"
+const addDateButtons = document.querySelectorAll('.btn-info');
+addDateButtons.forEach(button => {
+  button.addEventListener('click', function () {
+    const taskRow = this.closest('tr');
+    const taskTitle = taskRow.querySelector('td').textContent.trim();
+    alert(`Adicionando uma nova data para a tarefa "${taskTitle}".`);
+    // Aqui você pode adicionar lógica para permitir a seleção de uma data
+  });
+});
+
+// Evento para o botão "Escrever" (edição de tarefa)
+const editarButtons = document.querySelectorAll('.btn-warning');
+editarButtons.forEach(button => {
+  button.addEventListener('click', function() {
+    const taskRow = this.closest('tr'); // Encontra a linha da tarefa
+    const dataFinalizado = taskRow.querySelector('td').textContent; // Obtém a data de finalização
+    // Aqui você pode adicionar um campo de edição, por exemplo:
+    taskRow.querySelector('td').innerHTML = `<input type="date" value="${dataFinalizado}">`;
+    // Altere o texto do botão para "Salvar"
+    this.innerHTML = '<i class="fas fa-save"></i> Salvar';
+    this.classList.replace('btn-warning', 'btn-success');
+    // Mude a classe de "Salvar"
+    this.addEventListener('click', salvarEdicao);
+  });
+});
+
+// Evento para o botão "Salvar" (salvando edição de tarefa)
+function salvarEdicao() {
+  const taskRow = this.closest('tr');
+  const input = taskRow.querySelector('input');
+  const novaData = input.value;
+
+  // Salvar a nova data no HTML
+  taskRow.querySelector('td').textContent = novaData;
+
+  // Alterar o botão de volta para "Escrever"
+  this.innerHTML = '<i class="fas fa-edit"></i> Escrever';
+  this.classList.replace('btn-success', 'btn-warning');
+
+  // Remover o evento de salvar
+  this.removeEventListener('click', salvarEdicao);
+  this.addEventListener('click', editarButtons);
+}
+
+// Evento para o botão "Apagar"
+const apagarButtons = document.querySelectorAll('.btn-danger');
+apagarButtons.forEach(button => {
+  button.addEventListener('click', function() {
+    const taskRow = this.closest('tr');
+    // Confirmar antes de apagar
+    if (confirm('Tem certeza que deseja apagar esta tarefa?')) {
+      taskRow.remove();
+    }
+  });
+});
+
+// Evento para o botão "Adicionar Data"
+const adicionarDataButtons = document.querySelectorAll('.btn-info');
+adicionarDataButtons.forEach(button => {
+  button.addEventListener('click', function() {
+    const taskRow = this.closest('tr');
+    // Mostrar um prompt ou um modal para inserir a data
+    const novaData = prompt('Digite a nova data de finalização (Formato: YYYY-MM-DD)');
+    if (novaData) {
+      taskRow.querySelector('td').textContent = novaData;
+    }
+  });
+});
+
+// Adiciona o ouvinte de evento de clique nos botões de "Finalizar"
+const finalizarButtons = document.querySelectorAll('.finalizar-btn');
+finalizarButtons.forEach(function(button) {
+  button.addEventListener('click', function (event) {
+    const taskId = event.target.closest('tr').dataset.id;
+    finalizarTarefa(taskId); // chama a função para marcar a tarefa como finalizada
+  });
+});
+});
+
